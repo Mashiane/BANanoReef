@@ -223,7 +223,7 @@ End Sub
 private Sub template(props As Map) As Object   'ignore
 	Dim mout As String = mtemplate
 	For Each mk As String In props.Keys
-		Dim mv As String = props.Get(mk)
+		Dim mv As Object = props.Get(mk)
 		Dim tag As String = $"{${mk}}"$
 		mout = mout.Replace(tag,mv)
 		tag = $"#${mk}#"$

@@ -70,16 +70,32 @@ Sub Init
 	app.Initialize("#listofthings")
 	'build the template
 	Dim tmp As UOEHTML
-	tmp.Initialize("").SetTag("h1").SetContent("{greeting}") 
+	tmp.Initialize("").SetTag("h1").SetContent("{greeting}")
 	Dim tmp1 As UOEHTML
 	tmp1.Initialize("todos").SetTag("div")
 	Dim sb As StringBuilder
-	sb.Initialize 
+	sb.Initialize
 	sb.Append(tmp.HTML).Append(tmp1.HTML)
 	'
-	app.SetTemplate(sb.ToString) 
+	app.SetTemplate(sb.ToString)
 	app.SetAttachTo(sourceOfTruth.Reef)
 	app.Render(False)
+	
+	'render the list
+	Dim tdm As Map = sourceOfTruth.GetData
+	Dim tlist As List = tdm.Get("todos")
+	Dim li As StringBuilder
+	li.Initialize 
+	For Each strl As String In tlist
+		li.Append("<li>").Append(strl).Append("</li>")
+	Next
+	todos.Initialize("#todos")
+	todos.SetTemplate($"<h2>Todo List</h2><ul>${li.tostring}</ul>"$)
+	todos.SetAttachTo(sourceOfTruth.Reef)
+	todos.SetAttachTo(app.Reef)
+	todos.Render(False)
+	'
+	
 	'reactively update state
 	sourceOfTruth.Refresh(CreateMap("greeting": "Hi, universe"))
 End Sub

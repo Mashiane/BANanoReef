@@ -10,6 +10,6 @@ ModuleClosedNodes0=
 ModuleClosedNodes1=
 ModuleClosedNodes2=
 ModuleClosedNodes3=
-NavigationStack=BANanoReef,AddClass,87,0,BANanoReef,CreateHTML,105,0,BANanoReef,SetTemplateHTML,119,0,BANanoReef,BOData,200,0,BANanoReef,SetAttachTo,120,6,BANanoReef,Render,147,6,BANanoReef,SetLagoon,166,0,pgIndex,btn1_click,82,0,pgIndex,timer1_tick,92,0,pgIndex,Init,70,6
+NavigationStack=BANanoReef,SetID,30,0,BANanoReef,Class_Globals,1,0,BANanoReef,Initialize,24,0,BANanoReef,SetTag,54,0,BANanoReef,AddClass,85,0,BANanoReef,SetTemplateHTML,115,0,BANanoReef,Detach,161,0,pgIndex,btn1_click,86,0,BANanoReef,Render,145,0,pgIndex,Init,77,6
 SelectedBuild=0
 VisibleModules=1
