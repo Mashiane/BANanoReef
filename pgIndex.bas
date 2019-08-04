@@ -9,11 +9,29 @@ Sub Process_Globals
 	Private reef As BANanoReef
 	Private timer As Timer
 	Private nameCnt As Int
+	Private banano As BANano
+	Private btn1 As BANanoReef
 End Sub
 
 Sub Init
+	'create a div with id cont1
+	Dim cont1 As UOEHTML
+	cont1.Initialize("cont1").SetTag("div")
+	'create a div with id buttons1
+	Dim buttons1 As UOEHTML
+	buttons1.Initialize("buttons1").SetTag("div")
+	'
+	'get the body of the page, created by banano, 
+	Dim body As BANanoElement = banano.GetElement("#body")
+	'empty the body
+	body.empty
+	'
+	'add cont1 and buttons1 to body
+	body.Append(cont1.HTML)
+	body.Append(buttons1.html)
+	
 	'initialize a reef and set the object to render it to
-	reef.Initialize("#body")
+	reef.Initialize("#cont1")
 	'define the properties for the element, we have greeting and name
 	reef.SetData(CreateMap("greeting": "Hello", "name": "world"))
 	'define the h1 html element
@@ -21,10 +39,26 @@ Sub Init
 	'we render the element to the body
 	reef.Render(False)
 	'
+	'lets create another html5 component and render it to buttons1 container
+	
+	btn1.Initialize("#buttons1")
+	btn1.SetTag("button").SetID("btn1").SetLabel("Button 1")
+	btn1.SetStyle("background-color","blue").SetStyle("color", "white")
+	btn1.SetHeight("100px").SetWidth("100px")
+	btn1.Render(False)
+	'
+	'event
+	banano.GetElement("#btn1").HandleEvents("click", Me, "btn1_click")
+	
 	nameCnt = 0
-	timer.Initialize("timer1", 3000)
+	timer.Initialize("timer1", 1000)
 	timer.Enabled = True
 End Sub
+
+Sub btn1_click
+	banano.Window.Alert("I clicked btn1!")
+End Sub
+
 
 Sub timer1_tick
 	nameCnt = nameCnt + 1
@@ -40,5 +74,6 @@ Sub timer1_tick
 	Case 5
 		reef.Refresh(CreateMap("greeting":"Good day", "name":"Anele Mbanga"))
 		nameCnt = 0
+		btn1.Refresh(CreateMap("label":"My Blue Button"))
 	End Select
 End Sub

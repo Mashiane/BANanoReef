@@ -10,12 +10,98 @@ Sub Class_Globals
 	Public ID As String
 	Private Item As Map
 	Private mtemplate As String
+	Private ui As UOEHTML
+	Private data As Map
+	Private binternal As Boolean
 End Sub
 
 'Initializes the reef
 Public Sub Initialize(elementID As String) As BANanoReef
 	ID = elementID.tolowercase
 	Item.Initialize
+	ui.Initialize(elementID).SetImportant(False) 
+	data.Initialize 
+	binternal = False
+	Return Me
+End Sub
+
+'set id
+Sub SetID(eid As String) As BANanoReef
+	binternal = True
+	ui.ID = eid
+	Return Me
+End Sub
+
+'set type
+Sub SetType(t As String) As BANanoReef
+	binternal = True
+	ui.SetTYPE(t)
+	Return Me
+End Sub
+
+'set width
+Sub SetWidth(w As Object) As BANanoReef
+	binternal = True
+	ui.SetStyle("width", w)
+	Return Me
+End Sub
+
+'set height
+Sub SetHeight(h As Object) As BANanoReef
+	binternal = True
+	ui.SetStyle("height",h)
+	Return Me
+End Sub
+
+'set tag
+Sub SetTag(t As Object) As BANanoReef
+	binternal = True
+	ui.SetTag(t)
+	Return Me
+End Sub
+
+'set label
+Sub SetLabel(l As Object) As BANanoReef
+	binternal = True
+	data.Put("label", l)
+	ui.Addcontent("{label}")
+	Return Me
+End Sub
+
+'set value
+Sub SetValue(v As Object) As BANanoReef
+	binternal = True
+	data.Put("value", v)
+	ui.SetAttr("value","{value}")
+	Return Me
+End Sub
+
+'set class
+Sub SetClass(c As Object) As BANanoReef
+	binternal = True
+	data.Put("class", c)
+	ui.SetAttr("class","{class}")
+	Return Me
+End Sub
+
+'add class
+Sub AddClass(c As Object) As BANanoReef
+	binternal = True
+	ui.AddClass(c)
+	Return Me
+End Sub
+
+'set attribute
+Sub SetAttr(a As String, v As String) As BANanoReef
+	binternal = True
+	ui.SetAttr(a, v)
+	Return Me
+End Sub
+
+'set style
+Sub SetStyle(p As String, v As String) As BANanoReef
+	binternal = True
+	ui.SetStyle(p,v)
 	Return Me
 End Sub
 
@@ -28,13 +114,18 @@ End Sub
 
 'set the template using UOEHTML
 Sub SetTemplateHTML(t As UOEHTML) As BANanoReef
-	Dim sout As String = t.HTML 
+	Dim sout As String = t.HTML
+	Log(sout) 
 	SetTemplate(sout)
 	Return Me
 End Sub
 
 'build element
 Sub Render(bSanitize As Boolean)
+	If binternal Then
+		SetData(data)
+		SetTemplateHTML(ui)
+	End If
 	Dim props As Map
 	Dim tmp As BANanoObject = BANano.CallBack(Me,"template", Array(props))
 	If bSanitize Then
@@ -86,7 +177,7 @@ private Sub template(props As Map) As Object   'ignore
 		Dim mv As String = props.Get(mk)
 		Dim tag As String = $"{${mk}}"$
 		mout = mout.Replace(tag,mv)
-		Dim tag As String = $"#${mk}#"$
+		tag = $"#${mk}#"$
 		mout = mout.Replace(tag,mv)
 	Next
 	Return mout
