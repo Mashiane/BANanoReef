@@ -86,6 +86,8 @@ private Sub template(props As Map) As Object   'ignore
 		Dim mv As String = props.Get(mk)
 		Dim tag As String = $"{${mk}}"$
 		mout = mout.Replace(tag,mv)
+		Dim tag As String = $"#${mk}#"$
+		mout = mout.Replace(tag,mv)
 	Next
 	Return mout
 End Sub

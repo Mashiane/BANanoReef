@@ -17,7 +17,7 @@ Sub Init
 	'define the properties for the element, we have greeting and name
 	reef.SetData(CreateMap("greeting": "Hello", "name": "world"))
 	'define the h1 html element
-	reef.SetTemplate($"<h1>{greeting}, {name}!</h1>"$)
+	reef.SetTemplate($"<h1>#greeting#, #name#!</h1>"$)
 	'we render the element to the body
 	reef.Render(False)
 	'
