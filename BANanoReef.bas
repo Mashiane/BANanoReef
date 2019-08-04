@@ -6,58 +6,60 @@ Version=7.51
 @EndOfDesignText@
 #IgnoreWarnings:12
 Sub Class_Globals
-	Private Reef As BANanoObject
+	Public Reef As BANanoObject
 	Private BANano As BANano  'ignore
 	Public ID As Object
 	Private Item As Map
 	Private mtemplate As String
-	Private ui As UOEHTML
+	Public UI As UOEHTML
 	Private data As Map
 	Private binternal As Boolean
+	Private attachTo As List
 End Sub
 
 'Initializes the reef
 Public Sub Initialize(elementID As Object) As BANanoReef
 	ID = elementID
 	Item.Initialize
-	ui.Initialize(elementID).SetImportant(False) 
+	UI.Initialize(elementID).SetImportant(False) 
 	data.Initialize 
 	binternal = False
+	attachTo.Initialize 
 	Return Me
 End Sub
 
 'set id
 Sub SetID(eid As String) As BANanoReef
 	binternal = True
-	ui.ID = eid
+	UI.ID = eid
 	Return Me
 End Sub
 
 'set type
 Sub SetType(t As String) As BANanoReef
 	binternal = True
-	ui.SetTYPE(t)
+	UI.SetTYPE(t)
 	Return Me
 End Sub
 
 'set width
 Sub SetWidth(w As Object) As BANanoReef
 	binternal = True
-	ui.SetStyle("width", w)
+	UI.SetStyle("width", w)
 	Return Me
 End Sub
 
 'set height
 Sub SetHeight(h As Object) As BANanoReef
 	binternal = True
-	ui.SetStyle("height",h)
+	UI.SetStyle("height",h)
 	Return Me
 End Sub
 
 'set tag
 Sub SetTag(t As Object) As BANanoReef
 	binternal = True
-	ui.SetTag(t)
+	UI.SetTag(t)
 	Return Me
 End Sub
 
@@ -65,7 +67,7 @@ End Sub
 Sub SetLabel(l As Object) As BANanoReef
 	binternal = True
 	data.Put("label", l)
-	ui.Addcontent("{label}")
+	UI.Addcontent("{label}")
 	Return Me
 End Sub
 
@@ -73,7 +75,7 @@ End Sub
 Sub SetValue(v As Object) As BANanoReef
 	binternal = True
 	data.Put("value", v)
-	ui.SetAttr("value","{value}")
+	UI.SetAttr("value","{value}")
 	Return Me
 End Sub
 
@@ -81,28 +83,28 @@ End Sub
 Sub SetClass(c As Object) As BANanoReef
 	binternal = True
 	data.Put("class", c)
-	ui.SetAttr("class","{class}")
+	UI.SetAttr("class","{class}")
 	Return Me
 End Sub
 
 'add class
 Sub AddClass(c As Object) As BANanoReef
 	binternal = True
-	ui.AddClass(c)
+	UI.AddClass(c)
 	Return Me
 End Sub
 
 'set attribute
 Sub SetAttr(a As String, v As String) As BANanoReef
 	binternal = True
-	ui.SetAttr(a, v)
+	UI.SetAttr(a, v)
 	Return Me
 End Sub
 
 'set style
 Sub SetStyle(p As String, v As String) As BANanoReef
 	binternal = True
-	ui.SetStyle(p,v)
+	UI.SetStyle(p,v)
 	Return Me
 End Sub
 
@@ -120,11 +122,17 @@ Sub SetTemplateHTML(t As UOEHTML) As BANanoReef
 	Return Me
 End Sub
 
+'set attachTo
+Sub SetAttachTo(thisItem As BANanoObject) As BANanoReef
+	attachTo.Add(thisItem)
+	Return Me
+End Sub
+
 'build element
 Sub Render(bSanitize As Boolean)
 	Item.Put("data", data)
 	If binternal Then
-		SetTemplateHTML(ui)
+		SetTemplateHTML(UI)
 	End If
 	Dim props As Map
 	Dim tmp As BANanoObject = BANano.CallBack(Me,"template", Array(props))
@@ -134,6 +142,12 @@ Sub Render(bSanitize As Boolean)
 		Item.Put("sanitize", cb)
 	End If
 	Item.Put("template", tmp)
+	If attachTo.Size > 0 Then
+		Dim bo As BANanoObject = attachTo.Get(0)
+		Dim fld As BANanoObject = bo.GetField("data")
+		Item.put("data", fld)
+		Item.Put("attachTo", attachTo)
+	End If
 	Reef.Initialize2("Reef", Array(ID, Item))
 	Reef.RunMethod("render", Null)
 End Sub

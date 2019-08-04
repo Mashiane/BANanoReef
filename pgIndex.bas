@@ -11,6 +11,9 @@ Sub Process_Globals
 	Private nameCnt As Int
 	Private banano As BANano
 	Private btn1 As BANanoReef
+	Private sourceOfTruth As BANanoReef
+	Private app As BANanoReef
+	Private todos As BANanoReef
 End Sub
 
 Sub Init
@@ -21,6 +24,9 @@ Sub Init
 	Dim buttons1 As UOEHTML
 	buttons1.Initialize("buttons1").SetTag("div")
 	'
+	Dim lst As UOEHTML
+	lst.Initialize("listofthings").SetTag("div")
+	
 	'get the body of the page, created by banano, 
 	Dim body As BANanoElement = banano.GetElement("#body")
 	'empty the body
@@ -29,6 +35,7 @@ Sub Init
 	'add cont1 and buttons1 to body
 	body.Append(cont1.HTML)
 	body.Append(buttons1.html)
+	body.Append(lst.HTML)
 	
 	'initialize a reef and set the object to render it to
 	reef.Initialize("#cont1")
@@ -53,6 +60,28 @@ Sub Init
 	nameCnt = 0
 	timer.Initialize("timer1", 1000)
 	timer.Enabled = True
+	
+	'using lagoons to set state
+	sourceOfTruth.Initialize(Null).SetLagoon(True)
+	sourceOfTruth.SetDataKeyValue("greeting", "Hello, world!")
+	sourceOfTruth.SetDataKeyValue("todos", Array("Buy milk", "Bake a birthday cake", "Go apple picking"))
+	sourceOfTruth.Render(False)
+	'
+	app.Initialize("#listofthings")
+	'build the template
+	Dim tmp As UOEHTML
+	tmp.Initialize("").SetTag("h1").SetContent("{greeting}") 
+	Dim tmp1 As UOEHTML
+	tmp1.Initialize("todos").SetTag("div")
+	Dim sb As StringBuilder
+	sb.Initialize 
+	sb.Append(tmp.HTML).Append(tmp1.HTML)
+	'
+	app.SetTemplate(sb.ToString) 
+	app.SetAttachTo(sourceOfTruth.Reef)
+	app.Render(False)
+	'reactively update state
+	sourceOfTruth.Refresh(CreateMap("greeting": "Hi, universe"))
 End Sub
 
 Sub btn1_click
