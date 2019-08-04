@@ -4,10 +4,11 @@ ModulesStructureVersion=1
 Type=Class
 Version=7.51
 @EndOfDesignText@
+#IgnoreWarnings:12
 Sub Class_Globals
 	Private Reef As BANanoObject
 	Private BANano As BANano  'ignore
-	Public ID As String
+	Public ID As Object
 	Private Item As Map
 	Private mtemplate As String
 	Private ui As UOEHTML
@@ -16,8 +17,8 @@ Sub Class_Globals
 End Sub
 
 'Initializes the reef
-Public Sub Initialize(elementID As String) As BANanoReef
-	ID = elementID.tolowercase
+Public Sub Initialize(elementID As Object) As BANanoReef
+	ID = elementID
 	Item.Initialize
 	ui.Initialize(elementID).SetImportant(False) 
 	data.Initialize 
@@ -115,15 +116,14 @@ End Sub
 'set the template using UOEHTML
 Sub SetTemplateHTML(t As UOEHTML) As BANanoReef
 	Dim sout As String = t.HTML
-	Log(sout) 
 	SetTemplate(sout)
 	Return Me
 End Sub
 
 'build element
 Sub Render(bSanitize As Boolean)
+	Item.Put("data", data)
 	If binternal Then
-		SetData(data)
 		SetTemplateHTML(ui)
 	End If
 	Dim props As Map
@@ -136,6 +136,25 @@ Sub Render(bSanitize As Boolean)
 	Item.Put("template", tmp)
 	Reef.Initialize2("Reef", Array(ID, Item))
 	Reef.RunMethod("render", Null)
+End Sub
+
+'attach
+Sub Attach(targets As List) As BANanoReef
+	Reef.RunMethod("attach", Array(targets))
+	Return Me
+End Sub
+
+'detach
+Sub Detach(targets As List) As BANanoReef
+	Reef.RunMethod("detach", Array(targets))
+	Return Me
+End Sub
+
+
+'just store data, id should be null
+Sub SetLagoon(b As Boolean) As BANanoReef
+	Item.Put("lagoon", b)
+	Return Me
 End Sub
 
 'sanitize html content 
@@ -152,9 +171,25 @@ Sub GetData As Map
 	Return bo
 End Sub
 
+
+'get the data field bananoobject
+Sub BOData As BANanoObject
+	Dim fld As BANanoObject = Reef.GetField("data")
+	Return fld
+End Sub
+
 'set the data to use in the component
 Sub SetData(d As Map) As BANanoReef
-	Item.Put("data", d)
+	For Each mk As String In d.Keys
+		Dim mv As Object = d.Get(mk)
+		data.Put(mk, mv)
+	Next
+	Return Me
+End Sub
+
+'set data key and value
+Sub SetDataKeyValue(k As String, v As Object) As BANanoReef
+	data.Put(k, v)
 	Return Me
 End Sub
 
@@ -165,7 +200,7 @@ Sub SetTemplate(t As Object) As BANanoReef
 End Sub
 
 'update the data
-Sub Refresh(dm As Map) As BANanoReef
+Sub Refresh(dm As Object) As BANanoReef
 	Reef.RunMethod("setData", Array(dm))
 	Return Me
 End Sub
